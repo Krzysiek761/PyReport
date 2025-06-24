@@ -1,4 +1,3 @@
-# src/processor.py
 import pandas as pd
 from typing import Dict, Any
 
@@ -42,45 +41,3 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
         summary["dataframe"] = df
 
     return summary
-
-
-# tests/test_processor.py
-import pytest
-import pandas as pd
-import tempfile
-import os
-from src.processor import process_csv_file
-
-@pytest.fixture
-def sample_csv_file():
-    data = """A,B,C
-1,2,3
-4,5,6
-7,8,9
-"""
-    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix=".csv") as f:
-        f.write(data)
-        temp_path = f.name
-    yield temp_path
-    os.unlink(temp_path)
-
-def test_basic_summary(sample_csv_file):
-    config = {}
-    result = process_csv_file(sample_csv_file, config)
-
-    assert result["row_count"] == 3
-    assert set(result["columns"]) == {"A", "B", "C"}
-    assert "numerical_summary" in result
-    assert result["numerical_summary"]["A"]["sum"] == 12
-
-
-def test_filter_and_sort(sample_csv_file):
-    config = {
-        "filter": [{"column": "A", "operator": ">", "value": 2}],
-        "sort_by": "B"
-    }
-    result = process_csv_file(sample_csv_file, config)
-    df = result["dataframe"]
-
-    assert result["filtered"] is True
-    assert df.iloc[0]["A"] == 4  # after filtering and sorting
