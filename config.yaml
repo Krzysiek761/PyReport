@@ -1,0 +1,26 @@
+# Konfiguracja wejścia/wyjścia
+input_dir: test_data
+charts_dir: charts
+reports_dir: reports
+
+# Filtr: wyłącznie wiersze, gdzie age > 30 i city == "Warsaw"
+#filter:
+#  - column: age
+#    operator: ">"
+#    value: 30
+#  - column: city
+#    operator: "=="
+#    value: "Warsaw"
+
+# Sortowanie po dacie
+# sort_by: date
+
+# Definicja wykresów
+charts:
+  - type: bar
+    columns:
+      - department
+  - type: line
+    columns:
+      - date
+      - revenue
