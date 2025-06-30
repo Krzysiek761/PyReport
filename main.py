@@ -9,6 +9,6 @@ if __name__ == '__main__':
 
     df = load_csv(csv_path)
     if df is not None:
-        generate_bar_chart(df, 'Produkt', 'Sprzedaż', chart_path)
+        generate_bar_chart(df, 'Produkt', 'Sprzedaz', chart_path)
         generate_pdf_report('Sales Report', df, chart_path, pdf_path)
         print(f"Report generated at: {pdf_path}")
