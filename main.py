@@ -1,18 +1,14 @@
-import sys
-from utils import load_config, discover_csv_files
-from processor import process_csv_file
-from visualizer import generate_charts
-from reporter import generate_pdf_report
+from csv_pdf_report_tool.csv_loader import load_csv
+from csv_pdf_report_tool.chart_generator import generate_bar_chart
+from csv_pdf_report_tool.report_generator import generate_pdf_report
 
-def main():
-    config_path = sys.argv[1] if len(sys.argv) > 1 else "config.yaml"
-    config = load_config(config_path)
-    csv_files = discover_csv_files(config.get("input_dir", "data"))
+if __name__ == '__main__':
+    csv_path = 'test_data.csv'
+    chart_path = 'chart.png'
+    pdf_path = 'report.pdf'
 
-    for file_path in csv_files:
-        summary = process_csv_file(file_path, config)
-        charts = generate_charts(summary, config)
-        generate_pdf_report(file_path, summary, charts, config)
-
-if __name__ == "__main__":
-    main()
+    df = load_csv(csv_path)
+    if df is not None:
+        generate_bar_chart(df, 'Product', 'Sales', chart_path)
+        generate_pdf_report('Sales Report', df, chart_path, pdf_path)
+        print(f"Report generated at: {pdf_path}")
