@@ -2,8 +2,7 @@
 name = "csv-pdf-report-tool"
 version = "0.1.0"
 description = "Tool for converting CSV data into PDF reports with visualizations"
-authors = ["Krzysztof Wojtkowiak, Adam Pajer"]
-packages = [{ include = "csv_pdf_report_tool" }]
+authors = ["Krzysztof Wojtkowiak", "Adam Pajer"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
