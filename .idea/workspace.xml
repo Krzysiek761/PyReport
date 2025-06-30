@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="Akt">
+    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Testy jednostkowe.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/processor.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/reporter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/visualizer.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,23 +25,28 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Krzysiek761"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Krzysiek761&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Krzysiek761/moje-repo.git",
-    "accountId": "a7326160-38e5-44dd-9379-d74ae1066c85"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Krzysiek761/moje-repo.git&quot;,
+    &quot;accountId&quot;: &quot;a7326160-38e5-44dd-9379-d74ae1066c85&quot;
   }
-}]]></component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 5
-}]]></component>
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
   <component name="ProjectId" id="2yxxKTALdLx9AqSbK1b5auQ4TES" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
@@ -45,9 +55,11 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Python.Main V2 interaktywny.executor": "Run",
+    "Python.Main v1.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "master",
+    "git-widget-placeholder": "Produkcja",
     "settings.editor.selected.configurable": "org.jetbrains.plugins.github.ui.GithubSettingsConfigurable"
   }
 }]]></component>
@@ -83,12 +95,21 @@
       <option name="project" value="LOCAL" />
       <updated>1750791930553</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania">
+      <option name="closed" value="true" />
+      <created>1751304180349</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1751304180349</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Plik główny apki" />
     <MESSAGE value="Akt" />
-    <option name="LAST_COMMIT_MESSAGE" value="Akt" />
+    <MESSAGE value="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania" />
   </component>
 </project>
