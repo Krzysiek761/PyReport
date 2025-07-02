@@ -5,11 +5,6 @@ reports_dir: reports
 interactive_choose_file: true
 interactive_filter: true
 interactive_sort: true
+interactive_charts: true
 
-charts:
-  - type: bar
-    columns: ["Produkt"]
-  - type: line
-    columns: ["Data", "Wartość"]
-  - type: bar
-    columns: ["Miasto"]
+charts: []

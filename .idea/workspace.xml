@@ -4,7 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania" />
+    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania">
+      <change beforePath="$PROJECT_DIR$/.idea/PyReport.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/PyReport.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/charts.py" beforeDir="false" afterPath="$PROJECT_DIR$/charts.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/config.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/csv_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/csv_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/report.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -54,6 +63,7 @@
     "ASKED_ADD_EXTERNAL_FILES": "true",
     "Python.Main V2 interaktywny.executor": "Run",
     "Python.Main v1.executor": "Run",
+    "Python.main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "TestoweV2.1",
@@ -63,6 +73,7 @@
   <component name="RunManager">
     <configuration name="Main V2 interaktywny" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PyReport" />
+      <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
       <envs>
