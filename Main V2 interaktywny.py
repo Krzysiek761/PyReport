@@ -16,13 +16,14 @@ def load_config(path: str) -> Dict[str, Any]:
         return yaml.safe_load(file) or {}
 
 
-def discover_csv_files(directory: str) -> List[str]:1
+def discover_csv_files(directory: str) -> List[str]:
     """Return a list of CSV files found in *directory*."""
     return [
         os.path.join(directory, f)
         for f in os.listdir(directory)
         if f.endswith(".csv") and os.path.isfile(os.path.join(directory, f))
     ]
+
 
 
 def interactive_choose_file(files: List[str]) -> List[str]:
