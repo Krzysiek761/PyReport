@@ -16,7 +16,7 @@ def load_config(path: str) -> Dict[str, Any]:
         return yaml.safe_load(file) or {}
 
 
-def discover_csv_files(directory: str) -> List[str]:
+def discover_csv_files(directory: str) -> List[str]:1
     """Return a list of CSV files found in *directory*."""
     return [
         os.path.join(directory, f)
