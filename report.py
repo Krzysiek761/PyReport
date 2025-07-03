@@ -1,3 +1,4 @@
+
 import os
 from fpdf import FPDF
 from typing import Any, Dict, List
@@ -6,7 +7,9 @@ class PDFReport(FPDF):
     def __init__(self):
         super().__init__()
         # rejestracja czcionki TrueType dla obsługi UTF-8
-        font_path = os.path.join(os.path.dirname(__file__), 'DejaVuSans.ttf')
+        font_path = os.path.abspath("DejaVuSans.ttf")
+        if not os.path.exists(font_path):
+            raise FileNotFoundError(f"Brakuje pliku fontu: {font_path}")
         self.add_font('DejaVu', '', font_path, uni=True)
         self.set_font('DejaVu', '', 12)
 
@@ -36,7 +39,6 @@ class PDFReport(FPDF):
             if os.path.exists(path):
                 self.add_page()
                 self.image(path, w=180)
-
 
 def generate_pdf_report(summary: Dict[str, Any], chart_paths: List[str], config: Dict[str, Any]) -> str:
     pdf = PDFReport()

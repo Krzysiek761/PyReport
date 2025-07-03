@@ -1,3 +1,62 @@
+
+import argparse
+import sys
+import os
+
+# Argumenty główne (wczesne wczytanie aby były globalne)
+parser = argparse.ArgumentParser(description="CSV to PDF report")
+parser.add_argument("-c", "--config", type=str, default="config.yaml")
+parser.add_argument("--auto", action="store_true", help="Tryb automatyczny – przetwórz wszystkie pliki bez pytania")
+args, unknown_args = parser.parse_known_args()
+sys.argv = [sys.argv[0]] + unknown_args  # Pozwól oryginalnemu parserowi działać
+
+# Funkcja zastępcza dla interaktywnego wyboru
+import sys
+import os
+
+import sys
+import os
+
+def interactive_choose_file(files):
+    import __main__
+    args = getattr(__main__, 'args', None)
+
+    if args and getattr(args, 'auto', False) or not sys.stdin.isatty():
+        print("🔁 Tryb automatyczny: przetwarzanie wszystkich plików.")
+        return files
+
+    print("\n=== Wybór pliku CSV do przetworzenia ===")
+    for i, f in enumerate(files):
+        print(f"  {i}: {os.path.basename(f)}")
+    choice = input("Wybierz numer pliku (lub ENTER, aby przetworzyć wszystkie): ").strip()
+    if not choice:
+        return files
+    try:
+        idx = int(choice)
+        return [files[idx]]
+    except (ValueError, IndexError):
+        print("Nieprawidłowy wybór. Przetwarzanie wszystkich plików.")
+        return files
+
+    if args and getattr(args, 'auto', False) or not sys.stdin.isatty():
+        print("🔁 Tryb automatyczny: przetwarzanie wszystkich plików.")
+        return files
+
+    print("\n=== Wybór pliku CSV do przetworzenia ===")
+    for i, f in enumerate(files):
+        print(f"  {i}: {os.path.basename(f)}")
+    choice = input("Wybierz numer pliku (lub ENTER, aby przetworzyć wszystkie): ").strip()
+    if not choice:
+        return files
+    try:
+        idx = int(choice)
+        return [files[idx]]
+    except (ValueError, IndexError):
+        print("Nieprawidłowy wybór. Przetwarzanie wszystkich plików.")
+        return files
+
+
+
 #!/usr/bin/env python3
 import os
 import argparse
