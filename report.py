@@ -6,13 +6,13 @@ import matplotlib.pyplot as plt
 def generate_pdf_report(df, file_name, chart_type="Bar"):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
 
-    # Tytuł i nazwa pliku
-    pdf.set_font("Arial", 'B', 16)
+    # Dodaj font z obsługą polskich znaków
+    pdf.add_font("DejaVu", "", "DejaVuSans.ttf", uni=True)
+    pdf.set_font("DejaVu", '', 16)
     pdf.cell(0, 10, "Raport danych", ln=True, align='C')
-    pdf.set_font("Arial", size=12)
 
+    pdf.set_font("DejaVu", '', 12)
     if 'filename' in df.columns:
         pdf.cell(0, 10, f"Plik: {os.path.basename(df['filename'].iloc[0])}", ln=True)
     else:
@@ -22,7 +22,7 @@ def generate_pdf_report(df, file_name, chart_type="Bar"):
 
     # Wstaw dane jako tekst
     for col in df.columns:
-        value_str = ', '.join(map(str, df[col].unique()[:5]))  # Przykładowe wartości
+        value_str = ', '.join(map(str, df[col].unique()[:5]))
         pdf.cell(0, 10, f"{col}: {value_str}", ln=True)
 
     # Wykres

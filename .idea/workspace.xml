@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania">
+    <list default="true" id="c95575a4-a49f-4d3e-bc50-5ed96e6e49eb" name="Changes" comment="feat(report): dodano obsługę typu wykresu i nazwę pliku w raporcie PDF&#10;&#10;- Funkcja generate_pdf_report przyjmuje teraz argumenty: DataFrame, file_name, chart_type&#10;- Dodano obsługę trzech typów wykresów: Bar, Line, Pie&#10;- Jeśli DataFrame nie zawiera kolumny 'filename', używana jest nazwa przesłanego pliku&#10;- Generowany wykres wstawiany jest jako obraz w PDF">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/report.py" beforeDir="false" afterPath="$PROJECT_DIR$/report.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/reports/report_sprzedaz_produkty.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/reports/report_sprzedaz_produkty.pdf" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +28,6 @@
       </map>
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
   &quot;lastFilter&quot;: {
@@ -67,7 +67,7 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
   }
 }</component>
-  <component name="RunManager" selected="Python.Main V2 interaktywny">
+  <component name="RunManager">
     <configuration name="Main V2 interaktywny" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="PyReport" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -225,7 +225,15 @@
       <option name="project" value="LOCAL" />
       <updated>1751625268684</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="feat(report): dodano obsługę typu wykresu i nazwę pliku w raporcie PDF&#10;&#10;- Funkcja generate_pdf_report przyjmuje teraz argumenty: DataFrame, file_name, chart_type&#10;- Dodano obsługę trzech typów wykresów: Bar, Line, Pie&#10;- Jeśli DataFrame nie zawiera kolumny 'filename', używana jest nazwa przesłanego pliku&#10;- Generowany wykres wstawiany jest jako obraz w PDF">
+      <option name="closed" value="true" />
+      <created>1751626093806</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1751626093806</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -243,6 +251,7 @@
     <MESSAGE value="Plik główny apki" />
     <MESSAGE value="Akt" />
     <MESSAGE value="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dodanie skondensowanego pliku main - dodanie interaktywnych opcji wyboru podczas filtrowania" />
+    <MESSAGE value="feat(report): dodano obsługę typu wykresu i nazwę pliku w raporcie PDF&#10;&#10;- Funkcja generate_pdf_report przyjmuje teraz argumenty: DataFrame, file_name, chart_type&#10;- Dodano obsługę trzech typów wykresów: Bar, Line, Pie&#10;- Jeśli DataFrame nie zawiera kolumny 'filename', używana jest nazwa przesłanego pliku&#10;- Generowany wykres wstawiany jest jako obraz w PDF" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(report): dodano obsługę typu wykresu i nazwę pliku w raporcie PDF&#10;&#10;- Funkcja generate_pdf_report przyjmuje teraz argumenty: DataFrame, file_name, chart_type&#10;- Dodano obsługę trzech typów wykresów: Bar, Line, Pie&#10;- Jeśli DataFrame nie zawiera kolumny 'filename', używana jest nazwa przesłanego pliku&#10;- Generowany wykres wstawiany jest jako obraz w PDF" />
   </component>
 </project>
