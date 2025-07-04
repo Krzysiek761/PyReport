@@ -3,7 +3,6 @@ import pandas as pd
 import re
 from typing import Any, Dict, List
 
-
 def discover_csv_files(directory: str) -> List[str]:
     """Return a list of CSV files found in *directory*."""
     return [
@@ -11,7 +10,6 @@ def discover_csv_files(directory: str) -> List[str]:
         for f in os.listdir(directory)
         if f.endswith(".csv") and os.path.isfile(os.path.join(directory, f))
     ]
-
 
 def interactive_choose_file(files: List[str]) -> List[str]:
     """Allow user to select one CSV file or process all."""
@@ -27,24 +25,29 @@ def interactive_choose_file(files: List[str]) -> List[str]:
         print("Nieprawidłowy numer, zostaną przetworzone wszystkie pliki.")
     return files
 
-
 def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
     """Interactively ask user for filtering conditions and apply them to df."""
     filtered_df = df
     print("\n=== Interaktywne filtrowanie danych ===")
+    used_columns = set()
     while True:
+        available_cols = [col for col in filtered_df.columns if col not in used_columns]
+        if not available_cols:
+            print("Wszystkie kolumny zostały już użyte do filtrowania.")
+            break
         choice = input("Czy chcesz dodać warunek filtrowania? (y/n): ").strip().lower()
         if choice != 'y':
             break
         print("Dostępne kolumny do filtrowania:")
-        for idx, col in enumerate(df.columns):
-            print(f"  {idx}: {col} (typ: {df[col].dtype})")
+        for idx, col in enumerate(available_cols):
+            print(f"  {idx}: {col} (typ: {filtered_df[col].dtype})")
         try:
             col_idx = int(input("Wybierz numer kolumny: ").strip())
-            col = df.columns[col_idx]
+            col = available_cols[col_idx]
         except (ValueError, IndexError):
             print("Nieprawidłowy numer kolumny, spróbuj ponownie.")
             continue
+        used_columns.add(col)
         cond_str = input(
             f"Wprowadź warunek dla '{col}' (np. '> 20' lub '== Warsaw'): "
         ).strip()
@@ -53,7 +56,7 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
             print("Niepoprawny format, spróbuj ponownie.")
             continue
         op, val_raw = m.group(1), m.group(2)
-        if df[col].dtype.kind in 'iuf':
+        if filtered_df[col].dtype.kind in 'iuf':
             try:
                 val: Any = float(val_raw)
             except ValueError:
@@ -62,17 +65,16 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
         else:
             val = val_raw
         expr = {
-            '>': df[col] > val,
-            '<': df[col] < val,
-            '==': df[col] == val,
-            '!=': df[col] != val,
-            '>=': df[col] >= val,
-            '<=': df[col] <= val
+            '>': filtered_df[col] > val,
+            '<': filtered_df[col] < val,
+            '==': filtered_df[col] == val,
+            '!=': filtered_df[col] != val,
+            '>=': filtered_df[col] >= val,
+            '<=': filtered_df[col] <= val
         }[op]
-        filtered_df = filtered_df[expr]
+        filtered_df = filtered_df.loc[expr]
         print(f"Liczba wierszy po filtrze: {len(filtered_df)}")
     return filtered_df
-
 
 def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
     """Interactively ask user which column to sort by and order."""
@@ -89,14 +91,16 @@ def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
             print(f"Dane posortowane według '{col}' ({order})")
     return df
 
-
 def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
-    """Read *path* with encoding fallback and return summary including filtering and sorting."""
-    # prepare encodings
+    """
+    Read *path* with encoding fallback and return summary including filtering and sorting.
+    Obsługuje polskie znaki i pliki z Excela (cp1250, iso-8859-2).
+    """
     encodings: List[str] = []
     if config.get("encoding"):
         encodings.append(config["encoding"])
-    encodings += ["utf-8", "cp1250", "latin-1"]
+    # Najpierw najbardziej prawdopodobne, na końcu latin-1 (do łapania wyjątków)
+    encodings += ["utf-8", "cp1250", "iso-8859-2", "latin2", "latin-1"]
 
     df = None
     for enc in encodings:
@@ -107,6 +111,8 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
             break
         except UnicodeDecodeError:
             print(f"[WARN] Kodowanie '{enc}' nie zadziałało, próbuję kolejnego.")
+        except Exception as e:
+            print(f"[WARN] Kodowanie '{enc}' nie zadziałało ({e}), próbuję kolejnego.")
     if df is None:
         raise UnicodeDecodeError(
             f"Nie udało się odczytać pliku {path} przy użyciu kodowań: {encodings}"
@@ -135,9 +141,10 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
         }
     return summary
 
-
 def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
-    """Simple interactive input with validation: user enters chart specs in one line, re-prompt on error."""
+    """
+    Simple interactive input with validation: user enters chart specs in one line, re-prompt on error.
+    """
     cols = list(df.columns)
     print("\n=== Prosty wybór wykresów ===")
     for idx, col in enumerate(cols):
