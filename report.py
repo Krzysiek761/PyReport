@@ -1,78 +1,53 @@
-# report.py
-import os
+
 from fpdf import FPDF
-import fpdf.ttfonts
-from typing import Any, Dict, List
+import os
+import matplotlib.pyplot as plt
 
-# Wyczyść cache czcionek TTFontFile, aby usunąć stare ścieżki
-if hasattr(fpdf.ttfonts.TTFontFile, '_cache'):
-    fpdf.ttfonts.TTFontFile._cache.clear()
-
-class PDFReport(FPDF):
-    def __init__(self):
-        super().__init__()
-        # Dynamiczna lokalizacja pliku czcionki obok modułu
-        current_dir = os.path.abspath(os.path.dirname(__file__))
-        font_path = os.path.join(current_dir, 'DejaVuSans.ttf')
-        if not os.path.isfile(font_path):
-            raise FileNotFoundError(
-                f"Nie znaleziono pliku czcionki: {font_path}. "
-                "Upewnij się, że DejaVuSans.ttf jest obok report.py"
-            )
-        # Rejestrujemy TrueType font z unikalną nazwą i obsługą Unicode
-        self.add_font('DejaVuSansLocal', '', font_path, uni=True)
-        self.set_font('DejaVuSansLocal', '', 12)
-
-    def header(self):
-        # Nagłówek raportu
-        self.set_font('DejaVuSansLocal', '', 16)
-        self.cell(0, 10, 'Raport danych CSV', ln=True, align='C')
-        self.ln(10)
-
-    def add_table(self, df):
-        # Tabela danych: nagłówki + pierwsze 20 wierszy
-        self.set_font('DejaVuSansLocal', '', 10)
-        col_width = self.w / (len(df.columns) + 1)
-        # Nagłówki kolumn
-        for col in df.columns:
-            self.cell(col_width, 10, str(col), border=1)
-        self.ln()
-        # Wiersze danych
-        for _, row in df.iterrows():
-            for item in row:
-                self.cell(col_width, 10, str(item), border=1)
-            self.ln()
-
-    def add_images(self, paths: List[str]):
-        # Dodanie wykresów
-        for p in paths:
-            if os.path.exists(p):
-                self.add_page()
-                self.image(p, w=180)
-
-
-def generate_pdf_report(summary: Dict[str, Any], chart_paths: List[str], config: Dict[str, Any]) -> str:
-    pdf = PDFReport()
+def generate_pdf_report(df, file_name, chart_type="Bar"):
+    pdf = FPDF()
     pdf.add_page()
+    pdf.set_font("Arial", size=12)
 
-    # Informacje o pliku
-    pdf.cell(0, 10, f"Plik: {os.path.basename(summary['filename'])}", ln=True)
-    pdf.cell(0, 10, f"Wiersze: {summary['row_count']}", ln=True)
+    # Tytuł i nazwa pliku
+    pdf.set_font("Arial", 'B', 16)
+    pdf.cell(0, 10, "Raport danych", ln=True, align='C')
+    pdf.set_font("Arial", size=12)
 
-    # Tabela danych (pierwsze 20 wierszy)
-    pdf.ln(5)
-    pdf.cell(0, 10, "Tabela danych (pierwsze 20 wierszy):", ln=True)
-    pdf.add_table(summary['dataframe'].head(20))
+    if 'filename' in df.columns:
+        pdf.cell(0, 10, f"Plik: {os.path.basename(df['filename'].iloc[0])}", ln=True)
+    else:
+        pdf.cell(0, 10, f"Plik: {file_name}", ln=True)
 
-    # Wykresy
-    pdf.add_images(chart_paths)
+    pdf.ln(10)
 
-    # Zapis raportu
-    rd = config.get('reports_dir', 'reports')
-    os.makedirs(rd, exist_ok=True)
-    out = os.path.join(
-        rd,
-        f"report_{os.path.splitext(os.path.basename(summary['filename']))[0]}.pdf",
-    )
-    pdf.output(out)
-    return out
+    # Wstaw dane jako tekst
+    for col in df.columns:
+        value_str = ', '.join(map(str, df[col].unique()[:5]))  # Przykładowe wartości
+        pdf.cell(0, 10, f"{col}: {value_str}", ln=True)
+
+    # Wykres
+    if len(df.columns) >= 2:
+        x = df[df.columns[0]]
+        y = df[df.columns[1]]
+
+        plt.figure()
+        if chart_type == "Bar":
+            plt.bar(x, y)
+        elif chart_type == "Line":
+            plt.plot(x, y)
+        elif chart_type == "Pie":
+            plt.pie(y, labels=x, autopct='%1.1f%%')
+
+        plt.title(f"{chart_type} Chart")
+        chart_file = "temp_chart.png"
+        plt.savefig(chart_file)
+        plt.close()
+
+        # Dodaj wykres do PDF
+        pdf.image(chart_file, x=10, y=None, w=180)
+        os.remove(chart_file)
+
+    # Zapisz PDF
+    output_path = os.path.join("reports", f"report_{os.path.splitext(file_name)[0]}.pdf")
+    pdf.output(output_path)
+    return output_path
