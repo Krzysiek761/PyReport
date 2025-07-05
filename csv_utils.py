@@ -4,7 +4,7 @@ import re
 from typing import Any, Dict, List
 
 def discover_csv_files(directory: str) -> List[str]:
-    """Return a list of CSV files found in *directory*."""
+    """Zwraca listę plików CSV w katalogu."""
     return [
         os.path.join(directory, f)
         for f in os.listdir(directory)
@@ -12,7 +12,7 @@ def discover_csv_files(directory: str) -> List[str]:
     ]
 
 def interactive_choose_file(files: List[str]) -> List[str]:
-    """Allow user to select one CSV file or process all."""
+    """Pozwala wybrać jeden plik CSV albo przetworzyć wszystkie."""
     print("\n=== Wybór pliku CSV do przetworzenia ===")
     for idx, path in enumerate(files):
         print(f"  {idx}: {os.path.basename(path)}")
@@ -26,7 +26,7 @@ def interactive_choose_file(files: List[str]) -> List[str]:
     return files
 
 def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
-    """Interactively ask user for filtering conditions and apply them to df."""
+    """Interaktywnie pozwala użytkownikowi filtrować dane."""
     filtered_df = df
     print("\n=== Interaktywne filtrowanie danych ===")
     used_columns = set()
@@ -49,7 +49,7 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
             continue
         used_columns.add(col)
         cond_str = input(
-            f"Wprowadź warunek dla '{col}' (np. '> 20' lub '== Warsaw'): "
+            f"Wprowadź warunek dla '{col}' (np. '> 20' lub '== Warszawa'): "
         ).strip()
         m = re.match(r'^(>=|<=|==|!=|>|<)\s*(.+)$', cond_str)
         if not m:
@@ -77,7 +77,7 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
     return filtered_df
 
 def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
-    """Interactively ask user which column to sort by and order."""
+    """Interaktywnie pozwala sortować dane według wybranej kolumny."""
     print("\n=== Interaktywne sortowanie danych ===")
     for idx, col in enumerate(df.columns):
         print(f"  {idx}: {col}")
@@ -93,13 +93,11 @@ def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
 
 def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Read *path* with encoding fallback and return summary including filtering and sorting.
-    Obsługuje polskie znaki i pliki z Excela (cp1250, iso-8859-2).
+    Wczytuje plik z obsługą różnych kodowań i zwraca podsumowanie oraz DataFrame.
     """
     encodings: List[str] = []
     if config.get("encoding"):
         encodings.append(config["encoding"])
-    # Najpierw najbardziej prawdopodobne, na końcu latin-1 (do łapania wyjątków)
     encodings += ["utf-8", "cp1250", "iso-8859-2", "latin2", "latin-1"]
 
     df = None
@@ -143,64 +141,83 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
 
 def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """
-    Simple interactive input with validation: user enters chart specs in one line, re-prompt on error.
+    Idiotoodporny kreator wykresów: pozwala wybrać tylko sensowne kolumny.
     """
-    cols = list(df.columns)
-    print("\n=== Prosty wybór wykresów ===")
-    for idx, col in enumerate(cols):
-        print(f"  {idx}: {col} ({df[col].dtype})")
+    charts: List[Dict[str, Any]] = []
+    print("\n=== Interaktywny wybór wykresów ===")
 
-    prompt = (
-        "Podaj wykresy w formacie 'bar:kolumna' lub 'line:kolumna1,kolumna2',\n"
-        "oddzielone ';', np.: bar:department; line:date,revenue"
-    )
-    print(prompt)
+    # Sensowne kolumny dla wykresu słupkowego: kategoryczne o małej liczbie wartości
+    bar_candidates = [c for c in df.columns if df[c].dtype == "object" and df[c].nunique() <= 30]
+    # Sensowne kolumny na X do wykresu liniowego: liczby, daty, ewentualnie krótkie kategorie
+    line_x_candidates = [
+        c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
+        or pd.api.types.is_datetime64_any_dtype(df[c])
+        or (df[c].dtype == "object" and df[c].nunique() <= 20)
+    ]
+    # Sensowne kolumny na Y do wykresu liniowego: liczby!
+    line_y_candidates = [c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])]
+
+    if not bar_candidates and not line_y_candidates:
+        print("Brak kolumn, które można zobrazować wykresem.")
+        return []
 
     while True:
-        spec = input("Wykresy (ENTER = brak): ").strip()
-        if not spec:
-            return []
-        parts = [p.strip() for p in spec.split(';') if p.strip()]
-        charts: List[Dict[str, Any]] = []
-        valid = True
+        ile_str = input("Ile wykresów chcesz wygenerować? [0=żaden]: ").strip()
+        if ile_str == '':
+            ile = 0
+            break
+        try:
+            ile = int(ile_str)
+            if ile < 0:
+                raise ValueError
+            break
+        except ValueError:
+            print("Podaj liczbę wykresów lub ENTER.")
+    if ile == 0:
+        return charts
 
-        for part in parts:
-            if ':' not in part:
-                print(f"Błędny format '{part}', brak ':' separatora.")
-                valid = False
-                break
-            t, cols_str = part.split(':', 1)
-            t = t.strip().lower()
-            if t not in ('bar', 'line'):
-                print(f"Nieznany typ '{t}', użyj 'bar' lub 'line'.")
-                valid = False
-                break
-            cols_list = [c.strip() for c in cols_str.split(',')]
-
-            if t == 'bar':
-                if len(cols_list) != 1:
-                    print(f"Bar wymaga jednej kolumny, '{part}' pomijam.")
-                    valid = False
-                    break
-                c = cols_list[0]
-                if c not in cols or df[c].dropna().empty:
-                    print(f"Brak danych dla '{c}', wybierz inną.")
-                    valid = False
-                    break
-                charts.append({'type': 'bar', 'columns': [c]})
-
-            else:  # line
-                if len(cols_list) != 2:
-                    print(f"Line wymaga dwóch kolumn, '{part}' pomijam.")
-                    valid = False
-                    break
-                x, y = cols_list
-                if x not in cols or y not in cols or df[[x, y]].dropna().empty:
-                    print(f"Nieprawidłowe lub puste kolumny '{x},{y}'.")
-                    valid = False
-                    break
-                charts.append({'type': 'line', 'columns': [x, y]})
-
-        if valid:
-            return charts
-        print("Proszę ponownie wprowadzić prawidłową specyfikację.")
+    for nr in range(1, ile+1):
+        print(f"\n=== Definiujesz wykres #{nr} ===")
+        typ = ""
+        while typ not in ("bar", "line"):
+            typ = input("Wybierz typ wykresu ('bar' = słupkowy, 'line' = liniowy): ").strip().lower()
+            if typ not in ("bar", "line"):
+                print("Do wyboru jest tylko: 'bar' (słupkowy) lub 'line' (liniowy)!")
+        if typ == "bar":
+            if not bar_candidates:
+                print("Brak kolumn kategorycznych do wykresu słupkowego.")
+                continue
+            print("Dostępne kolumny do wykresu słupkowego:")
+            for idx, col in enumerate(bar_candidates):
+                print(f"  {idx}: {col} (unikalne: {df[col].nunique()})")
+            try:
+                idx = int(input("Numer kolumny: "))
+                c = bar_candidates[idx]
+            except (ValueError, IndexError):
+                print("Nieprawidłowy numer. Wykres zostanie pominięty.")
+                continue
+            charts.append({"type": "bar", "columns": [c]})
+        elif typ == "line":
+            if not line_x_candidates or not line_y_candidates:
+                print("Brak odpowiednich kolumn do wykresu liniowego.")
+                continue
+            print("Dostępne kolumny na oś X (pozioma):")
+            for idx, col in enumerate(line_x_candidates):
+                print(f"  {idx}: {col} (typ: {df[col].dtype}, unikalnych: {df[col].nunique()})")
+            try:
+                x_idx = int(input("Numer kolumny X: "))
+                x = line_x_candidates[x_idx]
+            except (ValueError, IndexError):
+                print("Nieprawidłowy numer. Wykres zostanie pominięty.")
+                continue
+            print("Dostępne kolumny na oś Y (pionowa, tylko liczby):")
+            for idx, col in enumerate(line_y_candidates):
+                print(f"  {idx}: {col} (typ: {df[col].dtype})")
+            try:
+                y_idx = int(input("Numer kolumny Y: "))
+                y = line_y_candidates[y_idx]
+            except (ValueError, IndexError):
+                print("Nieprawidłowy numer. Wykres zostanie pominięty.")
+                continue
+            charts.append({"type": "line", "columns": [x, y]})
+    return charts
