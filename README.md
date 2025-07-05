@@ -29,7 +29,7 @@ Projekt obsługuje **dowolne pliki CSV** – nie wymaga modyfikacji kodu przy an
 1. **Klonowanie repozytorium i instalacja zależności przez Poetry:**
 
     ```bash
-    git clone https://github.com/TWOJA-NAZWA-REPO/PyReport.git
+    git clone https://github.com/Krzysiek761/PyReport.git
     cd PyReport
     poetry install
     ```
