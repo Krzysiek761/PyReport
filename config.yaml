@@ -1,0 +1,10 @@
+input_dir: test_data
+charts_dir: charts
+reports_dir: reports
+
+interactive_choose_file: true
+interactive_filter: true
+interactive_sort: true
+interactive_charts: true
+
+charts: []
