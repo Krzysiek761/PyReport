@@ -55,5 +55,5 @@ W razie pytań, błędów lub sugestii – kontaktuj się z zespołem projektu n
 ---
 
 ## Autorzy
-- [Krzysztof Wojtkowiak]
-- [Adam Pajer]
+- Krzysztof Wojtkowiak
+- Adam Pajer
