@@ -1,10 +1,32 @@
-input_dir: test_data
+# Plik konfiguracyjny do automatycznego działania programu PyReport
+# Wystarczy wywołać: python main.py config.yaml
+
+input_dir: test_data                # katalog z plikami CSV (lub: input_file: path.csv)
+input_file: sprzedaz_produkty.csv   # pojedynczy plik do przetworzenia
+encoding: utf-8
+
+# Automatyczne filtrowanie (opcjonalnie)
+filters:
+  - column: "Wiek"
+    op: ">"        # możliwe: >, <, >=, <=, ==, !=
+    value: 18
+
+# Automatyczne sortowanie (opcjonalnie)
+sort:
+  column: "Miasto"
+  order: "asc"     # lub: "desc"
+
+# Definicje wykresów do wygenerowania (opcjonalnie)
+charts:
+  - type: "bar"
+    columns: ["Miasto"]
+  - type: "line"
+    columns: ["Wiek", "Zarobki"]
+
+interactive_filter: false
+interactive_sort: false
+interactive_choose_file: false
+interactive_charts: false
+
 charts_dir: charts
 reports_dir: reports
-
-interactive_choose_file: true
-interactive_filter: true
-interactive_sort: true
-interactive_charts: true
-
-charts: []
