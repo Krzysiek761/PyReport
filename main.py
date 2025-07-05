@@ -1,10 +1,9 @@
 import argparse
+import os
 from config import load_config
 from csv_utils import (
     discover_csv_files,
-    interactive_choose_file,
     process_csv_file,
-    interactive_choose_charts,
 )
 from charts import generate_charts
 from report import generate_pdf_report
@@ -12,31 +11,50 @@ from report import generate_pdf_report
 
 def main():
     p = argparse.ArgumentParser("CSV to PDF report")
-    p.add_argument("-c", "--config", default="config.yaml")
-    p.add_argument("-i", "--input-dir")
-    p.add_argument("--charts-dir")
-    p.add_argument("--reports-dir")
+    p.add_argument(
+        "-c", "--config", default="config.yaml", help="Plik konfiguracyjny YAML"
+    )
     args = p.parse_args()
 
-    cfg = load_config(args.config)
-    if args.input_dir:
-        cfg["input_dir"] = args.input_dir
-    if args.charts_dir:
-        cfg["charts_dir"] = args.charts_dir
-    if args.reports_dir:
-        cfg["reports_dir"] = args.reports_dir
+    # Sprawdź, czy config istnieje i go wczytaj
+    config = load_config(args.config) if os.path.exists(args.config) else {}
 
-    files = discover_csv_files(cfg.get("input_dir", "test_data"))
-    if cfg.get("interactive_choose_file", True):
-        files = interactive_choose_file(files)
+    # Przygotuj listę plików do przetworzenia
+    files = []
 
+    if config:
+        # Tryb automatyczny (config)
+        if "input_file" in config:
+            files = [os.path.join(config.get("input_dir", "."), config["input_file"])]
+        else:
+            files = discover_csv_files(config.get("input_dir", "test_data"))
+    else:
+        # Tryb interaktywny
+        files = discover_csv_files("test_data")
+        if not files:
+            print("Brak plików CSV w katalogu test_data/")
+            return
+        print("\nDostępne pliki CSV:")
+        for i, f in enumerate(files):
+            print(f"  {i}: {f}")
+        try:
+            choice = int(input("Podaj numer pliku do przetworzenia: "))
+            if choice < 0 or choice >= len(files):
+                print("Niepoprawny numer pliku, przerywam.")
+                return
+            files = [files[choice]]
+        except Exception:
+            print("Niepoprawny wybór, przerywam.")
+            return
+
+    # Przetwarzanie wybranego pliku/pliku z configa
     for f in files:
         print(f"\n=== Przetwarzanie: {f} ===")
-        summary = process_csv_file(f, cfg)
-        if cfg.get("interactive_charts", True):
-            cfg["charts"] = interactive_choose_charts(summary["dataframe"])
-        charts = generate_charts(summary, cfg)
-        rpt = generate_pdf_report(summary, charts, cfg)
+        summary = process_csv_file(f, config)
+
+        # Generowanie wykresów: automatycznie jeśli są zdefiniowane, interaktywnie jeśli nie
+        charts = generate_charts(summary, config)
+        rpt = generate_pdf_report(summary, charts, config)
         print(f"Generated: {rpt}")
 
 
