@@ -5,7 +5,10 @@ from csv_utils import (
     discover_csv_files,
     process_csv_file,
 )
-from charts import generate_charts
+from charts import (
+    generate_charts,
+    generate_special_pie_chart,
+)  # Dodano import specjalnej funkcji!
 from report import generate_pdf_report
 
 
@@ -52,8 +55,33 @@ def main():
         print(f"\n=== Przetwarzanie: {f} ===")
         summary = process_csv_file(f, config)
 
-        # Generowanie wykresów: automatycznie jeśli są zdefiniowane, interaktywnie jeśli nie
-        charts = generate_charts(summary, config)
+        charts = []
+        # --- NOWOŚĆ: automatyczne wykresy typu pie_special z config.yaml ---
+        if config and "charts" in config:
+            for chart in config["charts"]:
+                if chart.get("type") == "pie_special":
+                    # Potrzebne klucze: column oraz values (lista wartości!)
+                    charts_dir = config.get("charts_dir", "charts")
+                    os.makedirs(charts_dir, exist_ok=True)
+                    df = summary["dataframe"]
+                    column = chart.get("column")
+                    values = chart.get("values")
+                    if column and values and column in df.columns:
+                        pie_path = generate_special_pie_chart(
+                            df, column, values, charts_dir
+                        )
+                        if pie_path:
+                            charts.append(pie_path)
+                    else:
+                        print(
+                            "[WARN] Brak kolumny lub wartości do automatycznego wykresu udziału."
+                        )
+            # Wygeneruj również klasyczne wykresy z config.yaml (bar, line, pie)
+            charts += generate_charts(summary, config)
+        else:
+            # Tryb interaktywny: generuj wykresy przez zapytania do użytkownika
+            charts = generate_charts(summary, config)
+
         rpt = generate_pdf_report(summary, charts, config)
         print(f"Generated: {rpt}")
 
