@@ -1,27 +1,29 @@
 # Plik konfiguracyjny do automatycznego działania programu PyReport
-# Wystarczy wywołać: python main.py config.yaml
+# Wywołanie: python main.py --config config.yaml
 
-input_dir: test_data                # katalog z plikami CSV (lub: input_file: path.csv)
-input_file: sprzedaz_produkty.csv   # pojedynczy plik do przetworzenia
+input_dir: test_data
+input_file: sprzedaz_produkty.csv
 encoding: utf-8
 
-# Automatyczne filtrowanie (opcjonalnie)
-filters:
-  - column: "Wiek"
-    op: ">"        # możliwe: >, <, >=, <=, ==, !=
-    value: 18
+# Automatyczne filtrowanie (opcjonalnie, tu wyłączone)
+filters: []
 
 # Automatyczne sortowanie (opcjonalnie)
 sort:
-  column: "Miasto"
-  order: "asc"     # lub: "desc"
+  column: "Sprzedaż"
+  order: "desc"
 
-# Definicje wykresów do wygenerowania (opcjonalnie)
+# Definicje wykresów do wygenerowania
 charts:
   - type: "bar"
-    columns: ["Miasto"]
+    columns: ["Kategoria"]           # Słupkowy: liczba produktów w kategoriach
   - type: "line"
-    columns: ["Wiek", "Zarobki"]
+    columns: ["Produkt", "Sprzedaż"] # Liniowy: sprzedaż według produktu
+  - type: "pie"
+    columns: ["Kategoria"]           # Kołowy: udział każdej kategorii w całości
+  - type: "pie_special"
+    column: "Produkt"                # Specjalny kołowy: udział wybranych produktów w sprzedaży
+    values: ["Laptop", "Telewizor", "Pralka"]  # Podział na te produkty vs reszta
 
 interactive_filter: false
 interactive_sort: false
