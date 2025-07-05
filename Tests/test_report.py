@@ -3,16 +3,17 @@ import tempfile
 import pandas as pd
 from report import generate_pdf_report
 
+
 def get_font_path():
     # Szukaj czcionki w tym samym folderze co report.py
-    return os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "DejaVuSans.ttf")
+    return os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "..", "DejaVuSans.ttf"
+    )
+
 
 def test_generate_pdf_report_creates_pdf():
     # Przygotuj przykładowe dane
-    df = pd.DataFrame({
-        "kol1": ["A", "B", "C"],
-        "kol2": [1, 2, 3]
-    })
+    df = pd.DataFrame({"kol1": ["A", "B", "C"], "kol2": [1, 2, 3]})
     summary = {
         "filename": "dane.csv",
         "columns": ["kol1", "kol2"],
@@ -31,12 +32,10 @@ def test_generate_pdf_report_creates_pdf():
         # Plik powinien być niepusty
         assert os.path.getsize(out_path) > 0
 
+
 def test_generate_pdf_with_chart():
     # Przygotuj dane i "fałszywy wykres" (obrazek)
-    df = pd.DataFrame({
-        "A": [1, 2, 3],
-        "B": ["x", "y", "z"]
-    })
+    df = pd.DataFrame({"A": [1, 2, 3], "B": ["x", "y", "z"]})
     summary = {
         "filename": "dane2.csv",
         "columns": ["A", "B"],
@@ -51,6 +50,7 @@ def test_generate_pdf_with_chart():
         # Utwórz przykładowy wykres (jako plik PNG)
         chart_path = os.path.join(tmpdir, "dummy_chart.png")
         import matplotlib.pyplot as plt
+
         plt.figure()
         plt.plot([1, 2, 3])
         plt.savefig(chart_path)

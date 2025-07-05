@@ -2,6 +2,7 @@ import os
 import matplotlib.pyplot as plt
 from typing import Any, Dict, List
 
+
 def generate_charts(summary: Dict[str, Any], config: Dict[str, Any]) -> List[str]:
     df = summary["dataframe"]
     paths: List[str] = []

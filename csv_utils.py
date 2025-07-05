@@ -3,6 +3,7 @@ import pandas as pd
 import re
 from typing import Any, Dict, List
 
+
 def discover_csv_files(directory: str) -> List[str]:
     """Zwraca listę plików CSV w katalogu."""
     return [
@@ -11,12 +12,15 @@ def discover_csv_files(directory: str) -> List[str]:
         if f.endswith(".csv") and os.path.isfile(os.path.join(directory, f))
     ]
 
+
 def interactive_choose_file(files: List[str]) -> List[str]:
     """Pozwala wybrać jeden plik CSV albo przetworzyć wszystkie."""
     print("\n=== Wybór pliku CSV do przetworzenia ===")
     for idx, path in enumerate(files):
         print(f"  {idx}: {os.path.basename(path)}")
-    choice = input("Wybierz numer pliku (lub ENTER, aby przetworzyć wszystkie): ").strip()
+    choice = input(
+        "Wybierz numer pliku (lub ENTER, aby przetworzyć wszystkie): "
+    ).strip()
     if choice.isdigit():
         idx = int(choice)
         if 0 <= idx < len(files):
@@ -24,6 +28,7 @@ def interactive_choose_file(files: List[str]) -> List[str]:
             return [files[idx]]
         print("Nieprawidłowy numer, zostaną przetworzone wszystkie pliki.")
     return files
+
 
 def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
     """Interaktywnie pozwala użytkownikowi filtrować dane."""
@@ -36,7 +41,7 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
             print("Wszystkie kolumny zostały już użyte do filtrowania.")
             break
         choice = input("Czy chcesz dodać warunek filtrowania? (y/n): ").strip().lower()
-        if choice != 'y':
+        if choice != "y":
             break
         print("Dostępne kolumny do filtrowania:")
         for idx, col in enumerate(available_cols):
@@ -51,12 +56,12 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
         cond_str = input(
             f"Wprowadź warunek dla '{col}' (np. '> 20' lub '== Warszawa'): "
         ).strip()
-        m = re.match(r'^(>=|<=|==|!=|>|<)\s*(.+)$', cond_str)
+        m = re.match(r"^(>=|<=|==|!=|>|<)\s*(.+)$", cond_str)
         if not m:
             print("Niepoprawny format, spróbuj ponownie.")
             continue
         op, val_raw = m.group(1), m.group(2)
-        if filtered_df[col].dtype.kind in 'iuf':
+        if filtered_df[col].dtype.kind in "iuf":
             try:
                 val: Any = float(val_raw)
             except ValueError:
@@ -65,16 +70,17 @@ def interactive_filter(df: pd.DataFrame) -> pd.DataFrame:
         else:
             val = val_raw
         expr = {
-            '>': filtered_df[col] > val,
-            '<': filtered_df[col] < val,
-            '==': filtered_df[col] == val,
-            '!=': filtered_df[col] != val,
-            '>=': filtered_df[col] >= val,
-            '<=': filtered_df[col] <= val
+            ">": filtered_df[col] > val,
+            "<": filtered_df[col] < val,
+            "==": filtered_df[col] == val,
+            "!=": filtered_df[col] != val,
+            ">=": filtered_df[col] >= val,
+            "<=": filtered_df[col] <= val,
         }[op]
         filtered_df = filtered_df.loc[expr]
         print(f"Liczba wierszy po filtrze: {len(filtered_df)}")
     return filtered_df
+
 
 def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
     """Interaktywnie pozwala sortować dane według wybranej kolumny."""
@@ -86,10 +92,11 @@ def interactive_sort(df: pd.DataFrame) -> pd.DataFrame:
         idx = int(choice)
         if 0 <= idx < len(df.columns):
             col = df.columns[idx]
-            order = input("asc/desc [asc]: ").strip().lower() or 'asc'
-            df = df.sort_values(by=col, ascending=(order=='asc'))
+            order = input("asc/desc [asc]: ").strip().lower() or "asc"
+            df = df.sort_values(by=col, ascending=(order == "asc"))
             print(f"Dane posortowane według '{col}' ({order})")
     return df
+
 
 def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
     """
@@ -116,7 +123,9 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
             f"Nie udało się odczytać pliku {path} przy użyciu kodowań: {encodings}"
         )
 
-    print(f"\nŁaduję plik: {os.path.basename(path)} | wiersze: {len(df)} | kolumny: {list(df.columns)}")
+    print(
+        f"\nŁaduję plik: {os.path.basename(path)} | wiersze: {len(df)} | kolumny: {list(df.columns)}"
+    )
     if config.get("interactive_filter", True):
         df = interactive_filter(df)
     if config.get("interactive_sort", True):
@@ -139,6 +148,7 @@ def process_csv_file(path: str, config: Dict[str, Any]) -> Dict[str, Any]:
         }
     return summary
 
+
 def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
     """
     Idiotoodporny kreator wykresów: pozwala wybrać tylko sensowne kolumny.
@@ -147,10 +157,14 @@ def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
     print("\n=== Interaktywny wybór wykresów ===")
 
     # Sensowne kolumny dla wykresu słupkowego: kategoryczne o małej liczbie wartości
-    bar_candidates = [c for c in df.columns if df[c].dtype == "object" and df[c].nunique() <= 30]
+    bar_candidates = [
+        c for c in df.columns if df[c].dtype == "object" and df[c].nunique() <= 30
+    ]
     # Sensowne kolumny na X do wykresu liniowego: liczby, daty, ewentualnie krótkie kategorie
     line_x_candidates = [
-        c for c in df.columns if pd.api.types.is_numeric_dtype(df[c])
+        c
+        for c in df.columns
+        if pd.api.types.is_numeric_dtype(df[c])
         or pd.api.types.is_datetime64_any_dtype(df[c])
         or (df[c].dtype == "object" and df[c].nunique() <= 20)
     ]
@@ -163,7 +177,7 @@ def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
 
     while True:
         ile_str = input("Ile wykresów chcesz wygenerować? [0=żaden]: ").strip()
-        if ile_str == '':
+        if ile_str == "":
             ile = 0
             break
         try:
@@ -176,11 +190,15 @@ def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
     if ile == 0:
         return charts
 
-    for nr in range(1, ile+1):
+    for nr in range(1, ile + 1):
         print(f"\n=== Definiujesz wykres #{nr} ===")
         typ = ""
         while typ not in ("bar", "line"):
-            typ = input("Wybierz typ wykresu ('bar' = słupkowy, 'line' = liniowy): ").strip().lower()
+            typ = (
+                input("Wybierz typ wykresu ('bar' = słupkowy, 'line' = liniowy): ")
+                .strip()
+                .lower()
+            )
             if typ not in ("bar", "line"):
                 print("Do wyboru jest tylko: 'bar' (słupkowy) lub 'line' (liniowy)!")
         if typ == "bar":
@@ -203,7 +221,9 @@ def interactive_choose_charts(df: pd.DataFrame) -> List[Dict[str, Any]]:
                 continue
             print("Dostępne kolumny na oś X (pozioma):")
             for idx, col in enumerate(line_x_candidates):
-                print(f"  {idx}: {col} (typ: {df[col].dtype}, unikalnych: {df[col].nunique()})")
+                print(
+                    f"  {idx}: {col} (typ: {df[col].dtype}, unikalnych: {df[col].nunique()})"
+                )
             try:
                 x_idx = int(input("Numer kolumny X: "))
                 x = line_x_candidates[x_idx]

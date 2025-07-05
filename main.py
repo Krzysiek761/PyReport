@@ -4,10 +4,11 @@ from csv_utils import (
     discover_csv_files,
     interactive_choose_file,
     process_csv_file,
-    interactive_choose_charts
+    interactive_choose_charts,
 )
 from charts import generate_charts
 from report import generate_pdf_report
+
 
 def main():
     p = argparse.ArgumentParser("CSV to PDF report")
@@ -37,6 +38,7 @@ def main():
         charts = generate_charts(summary, cfg)
         rpt = generate_pdf_report(summary, charts, cfg)
         print(f"Generated: {rpt}")
+
 
 if __name__ == "__main__":
     main()

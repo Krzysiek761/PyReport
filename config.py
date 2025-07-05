@@ -1,6 +1,7 @@
 import yaml
 from typing import Any, Dict
 
+
 def load_config(path: str) -> Dict[str, Any]:
     """
     Load YAML configuration from *path*.
@@ -10,5 +11,7 @@ def load_config(path: str) -> Dict[str, Any]:
         with open(path, "r", encoding="utf-8") as file:
             return yaml.safe_load(file) or {}
     except FileNotFoundError:
-        print(f"[WARN] Nie znaleziono pliku konfiguracyjnego '{path}', używam ustawień domyślnych.")
+        print(
+            f"[WARN] Nie znaleziono pliku konfiguracyjnego '{path}', używam ustawień domyślnych."
+        )
         return {}
