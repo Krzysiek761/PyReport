@@ -2,23 +2,39 @@
 
 ## Opis projektu
 
-**PyReport** to narzędzie, które pozwala na:
+**PyReport** to rozbudowane narzędzie do analizy danych, które umożliwia:
 - interaktywne filtrowanie i sortowanie danych z plików `.csv`,
-- wybór oraz generowanie wykresów (słupkowych, liniowych i kołowych),
-- eksport gotowego raportu do pliku PDF z tabelą i wykresami.
+- generowanie wykresów (słupkowych, liniowych i kołowych) zarówno manualnie, jak i na podstawie pliku konfiguracyjnego,
+- eksport gotowego raportu do pliku PDF (z tabelą i wykresami, z obsługą polskich znaków),
+- automatyzację pracy dzięki obsłudze konfiguracji oraz integracji z narzędziami do CI/CD.
 
-Projekt obsługuje **dowolne dane CSV** – nie wymaga modyfikacji kodu źródłowego dla nowych danych.
+Projekt obsługuje **dowolne pliki CSV** – nie wymaga modyfikacji kodu przy analizie nowych danych.
 
 ---
 
-## Instrukcja uruchomienia
+## Technologie i automatyzacje
 
-1. **Wymagania:**
-   - Python 3.8+  
-   - Zainstalowane biblioteki:  
-     ```
-     pip install pandas matplotlib fpdf
-     ```
+- **Python 3.8+**
+- **Zarządzanie zależnościami i środowiskiem:** [Poetry](https://python-poetry.org/)
+- **Formatowanie kodu:** [black](https://black.readthedocs.io/en/stable/)
+- **Testy automatyczne:** pytest
+- **Automatyzacja CI/CD:** GitHub Actions – automatyczne testowanie kodu przy każdym commicie/pull request (w pliku `.github/workflows/python-app.yml`)
+- **Automatyzacja działania:** Możliwość uruchamiania programu z poziomu pliku konfiguracyjnego `config.yaml` (praca manualna i w pełni automatyczna)
+- **Uruchamianie w chmurze:** Program działa na serwerze AWS EC2 (Ubuntu) – możliwość obsługi przez terminal SSH lub automatyczne zadania (np. CRON)
+
+---
+
+## Instalacja
+
+1. **Klonowanie repozytorium i instalacja zależności przez Poetry:**
+
+    ```bash
+    git clone https://github.com/TWOJA-NAZWA-REPO/PyReport.git
+    cd PyReport
+    poetry install
+    ```
+
+    *(Alternatywnie: `pip install pandas matplotlib fpdf` dla instalacji ręcznej.)*
 
 2. **Przygotowanie środowiska:**
    - Upewnij się, że w katalogu projektu znajdują się pliki:
@@ -26,117 +42,67 @@ Projekt obsługuje **dowolne dane CSV** – nie wymaga modyfikacji kodu źródł
      - `csv_utils.py`
      - `charts.py`
      - `report.py`
-     - `config.yaml` (opcjonalnie)
+     - `config.yaml` (opcjonalnie – do pracy automatycznej)
      - plik czcionki **DejaVuSans.ttf** (w tym samym folderze co `report.py`!)
 
 3. **Przygotuj katalog `test_data` z plikami CSV do analizy.**
    - Każdy plik `.csv` może mieć inne kolumny i kodowanie (obsługa automatyczna).
 
-4. **Uruchom program:**
+---
 
+## Uruchomienie programu
+
+- W trybie interaktywnym (manualnym):
+
+    ```bash
+    poetry run python main.py
+    ```
+    lub
     ```bash
     python main.py
     ```
 
-   Program przeprowadzi Cię przez wybór pliku, filtrowanie, sortowanie i wybór wykresów w prostym trybie interaktywnym.
-
----
-
-## Najważniejsze funkcje
-
-- Automatyczne wykrywanie kodowania pliku.
-- Unikanie wielokrotnego filtrowania po tej samej kolumnie.
-- Automatyczny wybór pliku .csv z katalogu.
-- Intuicyjny kreator wykresów.
-- Generowanie raportu PDF z poprawnymi polskimi znakami.
-- Obsługa zarówno trybu interaktywnego, jak i automatycznego (przez plik `config.yaml`).
-
----
-
-## Generowanie wykresu udziału wybranych wartości na tle całości
-
-Jedną z kluczowych funkcji PyReport jest **możliwość tworzenia wykresów prezentujących udział dowolnych wybranych wartości z wybranej kolumny na tle wszystkich rekordów**. To pozwala np. zobaczyć udział studentów z Warszawy, Krakowa i Poznania na tle całej bazy.
-
-### Jak skorzystać z tej funkcji?
-
-1. **Uruchom program w trybie interaktywnym:**
+- W trybie automatycznym (po przygotowaniu `config.yaml`):
 
     ```bash
-    python main.py
+    poetry run python main.py --config config.yaml
     ```
-
-2. **Po załadowaniu danych pojawi się pytanie:**
-
-    ```
-    Czy chcesz utworzyć specjalny wykres udziału wybranych wartości na tle wszystkich? (y/n)
-    ```
-
-    Wpisz `y` i naciśnij ENTER, aby skorzystać z tej funkcji.
-
-3. **Wybierz kolumnę do analizy** (np. miasto, produkt):
-
-    Zobaczysz listę kolumn, np.:
-
-    ```
-    0: nr_indeksu (typ: int64)
-    1: miasto (typ: object)
-    2: wydział (typ: object)
-    3: imię (typ: object)
-    ...
-    ```
-
-    Podaj **numer kolumny** (np. `1` dla "miasto") i naciśnij ENTER.
-
-4. **Zobaczysz listę unikalnych wartości w tej kolumnie, np.:**
-
-    ```
-    0: Warszawa
-    1: Kraków
-    2: Wrocław
-    3: Łódź
-    4: Gdańsk
-    ...
-    ```
-
-    **Podaj numery wybranych wartości oddzielone przecinkami** (np. `0,4,7`), aby wybrać konkretne miasta/produkty/osoby, które mają być wyodrębnione na wykresie.  
-    Pozostałe rekordy zostaną automatycznie oznaczone jako "Inne".
-
-5. **Program wygeneruje wykres kołowy** (pie chart) z udziałami wybranych wartości oraz grupą "Inne".  
-   Plik z wykresem zostanie zapisany w katalogu `charts/`, np.:
-
-    ```
-    charts/chart_udzial_miasto.png
-    ```
-
-6. **Po utworzeniu wykresu możesz generować także inne wykresy** (słupkowe, liniowe, kołowe) według standardowych opcji programu.
+    *(wspiera automatyczną analizę, generowanie wykresów i raportów bez pytań do użytkownika)*
 
 ---
 
-### Przykład użycia
+## Formatowanie kodu
 
-Aby zobaczyć **udział Warszawy, Bydgoszczy, Szczecina, Lublina i Poznania na tle wszystkich studentów**:
+Aby zapewnić jednolity styl kodu, używaj narzędzia [black](https://black.readthedocs.io/en/stable/):
 
-- Po wybraniu kolumny `miasto`, podaj numery tych miast, np. `0,4,8,7,5`  
-  *(numery mogą się różnić w Twoim pliku!)*.
-- Otrzymasz wykres z sześcioma fragmentami: **Warszawa, Bydgoszcz, Szczecin, Lublin, Poznań, Inne**.
+```bash
+poetry run black
+``` 
 
----
+## Testy Automatyczne
 
-### Dodatkowe uwagi
+Testy jednostkowe uruchomisz komendą:
+````
+poetry run pytest
+````
 
-- Funkcja działa z każdą kolumną – możesz sprawdzić udział dowolnych wybranych wartości (np. wydziałów, produktów).
-- Wygenerowane wykresy zapisują się do katalogu `charts/`.
-- Jeśli nie chcesz korzystać z tej funkcji, po prostu wpisz `n` na pierwszym pytaniu.
+## CI/CD – GitHub Actions
+Repozytorium posiada skonfigurowany plik workflow (.github/workflows/python-app.yml), który:
 
----
+- automatycznie formatuje i testuje kod po każdym commicie/pull request,
 
-## Kontakt / wsparcie
+- ułatwia kontrolę jakości oraz wdrożenia.
 
-W razie pytań, błędów lub sugestii – kontaktuj się z zespołem projektu na GitHubie lub przez e-mail.
+## Automatyzacja na AWS EC2
 
----
+PyReport może być uruchamiany na serwerze Ubuntu (np. AWS EC2) zarówno manualnie (po SSH), jak i w pełni automatycznie (np. przez CRON, w połączeniu z ```config.yaml```).
+Dzięki temu możliwe jest automatyczne generowanie raportów cyklicznych.
 
-## Autorzy
+## Kontakt/Wsparcie 
+Kontakt / wsparcie
 
-- Krzysztof Wojtkowiak
+W razie pytań, błędów lub sugestii – skontaktuj się z zespołem projektu na GitHubie lub przez e-mail.
+
+## Autorzy 
+- Krzysztof Wojtkowiak 
 - Adam Pajer
