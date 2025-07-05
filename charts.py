@@ -9,7 +9,8 @@ def generate_charts(summary: Dict[str, Any], config: Dict[str, Any]) -> List[str
     os.makedirs(charts_dir, exist_ok=True)
 
     charts_cfg = config.get("charts", [])
-    # Jeśli nie zdefiniowano wykresów w configu – przejdź do trybu interaktywnego!
+
+    # === Tryb interaktywny ===
     if not charts_cfg:
         print("\n=== Interaktywne generowanie wykresów ===")
         print("Dostępne kolumny:")
@@ -21,16 +22,24 @@ def generate_charts(summary: Dict[str, Any], config: Dict[str, Any]) -> List[str
             if not typ:
                 break
             if typ == "bar":
-                idx = int(input("Podaj numer kolumny do wykresu słupkowego: "))
-                col = df.columns[idx]
+                print("Podpowiedź: Wykres słupkowy najlepiej pokazuje sumy lub liczebność dla wybranej kategorii.")
+                idx_cat = int(input("Podaj numer kolumny kategorii (np. 'Kategoria'): "))
+                col_cat = df.columns[idx_cat]
+                val_in = input("Podaj numer kolumny z wartościami liczbowymi (np. 'Sprzedaż') lub ENTER aby policzyć tylko liczebność: ").strip()
                 plt.figure()
-                df[col].value_counts().plot(kind="bar")
-                p = os.path.join(charts_dir, f"chart_{col}_bar.png")
+                if val_in:
+                    col_val = df.columns[int(val_in)]
+                    data = df.groupby(col_cat)[col_val].sum()
+                    data.plot(kind="bar")
+                else:
+                    df[col_cat].value_counts().plot(kind="bar")
+                p = os.path.join(charts_dir, f"chart_{col_cat}_bar.png")
                 plt.savefig(p)
                 plt.close()
                 paths.append(p)
                 print(f"Wygenerowano wykres słupkowy: {p}")
             elif typ == "line":
+                print("Podpowiedź: Wykres liniowy ma sens, gdy oś X to liczby lub daty, a Y to wartości liczbowe.")
                 idx_x = int(input("Podaj numer kolumny X: "))
                 idx_y = int(input("Podaj numer kolumny Y: "))
                 col_x = df.columns[idx_x]
@@ -45,7 +54,7 @@ def generate_charts(summary: Dict[str, Any], config: Dict[str, Any]) -> List[str
             else:
                 print("Nieznany typ wykresu.")
     else:
-        # Tryb automatyczny – wykresy wg config.yaml
+        # === Tryb automatyczny (config.yaml) ===
         for i, chart in enumerate(charts_cfg):
             t = chart.get("type")
             cols = chart.get("columns", [])
@@ -60,6 +69,17 @@ def generate_charts(summary: Dict[str, Any], config: Dict[str, Any]) -> List[str
                 plt.figure()
                 df[c].value_counts().plot(kind="bar")
                 p = os.path.join(charts_dir, f"chart_{i}_{c}_bar.png")
+                plt.savefig(p)
+                plt.close()
+                paths.append(p)
+            elif t == "bar" and len(cols) == 2:
+                # bar z sumą wartości liczbowych względem kategorii
+                cat_col, val_col = cols
+                if df[[cat_col, val_col]].dropna().empty:
+                    continue
+                plt.figure()
+                df.groupby(cat_col)[val_col].sum().plot(kind="bar")
+                p = os.path.join(charts_dir, f"chart_{i}_{cat_col}_{val_col}_bar.png")
                 plt.savefig(p)
                 plt.close()
                 paths.append(p)
