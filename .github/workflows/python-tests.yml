@@ -28,4 +28,6 @@ jobs:
         run: test -f DejaVuSans.ttf
 
       - name: Run tests
-        run: poetry run pytest Tests/
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)
+          poetry run pytest Tests/
