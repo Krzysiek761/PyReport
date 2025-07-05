@@ -1,11 +1,6 @@
 import os
 from fpdf import FPDF
-import fpdf.ttfonts
 from typing import Any, Dict, List
-
-# Wyczyść cache czcionek TTFontFile, aby usunąć stare ścieżki
-if hasattr(fpdf.ttfonts.TTFontFile, '_cache'):
-    fpdf.ttfonts.TTFontFile._cache.clear()
 
 class PDFReport(FPDF):
     def __init__(self):
