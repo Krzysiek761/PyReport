@@ -13,31 +13,44 @@ def main():
     p.add_argument("-c", "--config", default="config.yaml", help="Plik konfiguracyjny YAML")
     args = p.parse_args()
 
-    # Załaduj config
+    # Sprawdź, czy config istnieje i go wczytaj
     config = load_config(args.config) if os.path.exists(args.config) else {}
 
-    # Ustal pliki do przetworzenia
+    # Przygotuj listę plików do przetworzenia
     files = []
-    if "input_file" in config:
-        files = [os.path.join(config.get("input_dir", "."), config["input_file"])]
-    else:
-        files = discover_csv_files(config.get("input_dir", "test_data"))
-        # Jeśli tryb interaktywny, poprosi o wybór pliku (domyślnie w csv_utils.py)
 
+    if config:
+        # Tryb automatyczny (config)
+        if "input_file" in config:
+            files = [os.path.join(config.get("input_dir", "."), config["input_file"])]
+        else:
+            files = discover_csv_files(config.get("input_dir", "test_data"))
+    else:
+        # Tryb interaktywny
+        files = discover_csv_files("test_data")
+        if not files:
+            print("Brak plików CSV w katalogu test_data/")
+            return
+        print("\nDostępne pliki CSV:")
+        for i, f in enumerate(files):
+            print(f"  {i}: {f}")
+        try:
+            choice = int(input("Podaj numer pliku do przetworzenia: "))
+            if choice < 0 or choice >= len(files):
+                print("Niepoprawny numer pliku, przerywam.")
+                return
+            files = [files[choice]]
+        except Exception:
+            print("Niepoprawny wybór, przerywam.")
+            return
+
+    # Przetwarzanie wybranego pliku/pliku z configa
     for f in files:
         print(f"\n=== Przetwarzanie: {f} ===")
-        # process_csv_file rozpoznaje, czy ma działać interaktywnie, czy na podstawie configu
         summary = process_csv_file(f, config)
 
-        # Automatyczny wybór wykresów lub interaktywny, zależnie od configu
-        charts = []
-        if "charts" in config:
-            # charts.py obsłuży listę wykresów z configu (trzeba mieć odpowiednią obsługę)
-            charts = generate_charts(summary, config)
-        else:
-            # domyślnie, jeśli nie ma wykresów w configu, obsługa interaktywna w csv_utils/charts.py
-            charts = generate_charts(summary, config)
-
+        # Generowanie wykresów: automatycznie jeśli są zdefiniowane, interaktywnie jeśli nie
+        charts = generate_charts(summary, config)
         rpt = generate_pdf_report(summary, charts, config)
         print(f"Generated: {rpt}")
 
